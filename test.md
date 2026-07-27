@@ -4,6 +4,7 @@ Reminder: Every group member should pull it, change it, commit, and push the cha
 
 Please add your name to this list below (to fufil the 'change it' part):
 Arnold
+Oliver
 
 NOTE: our meeting slides/minutes can be found on the project OneDrive instead
 
