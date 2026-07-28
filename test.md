@@ -6,6 +6,7 @@ Please add your name to this list below (to fufil the 'change it' part):
 Arnold
 Oliver
 Marian
+Leland
 NOTE: our meeting slides/minutes can be found on the project OneDrive instead
 
 TODO: Make sure this test md file is deleted during refactor week!
