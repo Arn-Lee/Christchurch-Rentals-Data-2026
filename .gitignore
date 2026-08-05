@@ -3,3 +3,7 @@ data/listings.csv
 
 #ds_store
 .DS_Store
+
+
+#ipynb_checkpoints
+.ipynb_checkpoints/
