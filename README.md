@@ -28,5 +28,15 @@ The data dictionary for the AirBnB data is also available at Inside Airbnb. For 
 | number_of_reviews_ltm          | integer  | y          | The number of reviews the listing has (in the last 12 months)                                                                                                                                     |
 | license                        | string   |            |                                                                                                                                                                                                   |
 
+Bond lodgement data from Tenancy Services includes summary statistics related to bonds lodged with Tenancy Services per statistical area. 
+
+It is available at https://www.tenancy.govt.nz/about-tenancy-services/data-and-statistics/rental-bond-data/
+
+As a data dictionary was not provided, the following descriptions are assumed:
+
 
 TODO note: we'll need to update this towards the end of the course (during refactor week) with a more accurate and descriptive readme.
+
+TODO note 2: Need to clean up the table since we'll be culling some of the cols
+
+TODO note 3: Actually, we'll need to clean up this whole readme to describe the contents of the files and how/why to run them.
