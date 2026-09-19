@@ -4,6 +4,8 @@ data/
 #ds_store
 .DS_Store
 
+# any envs
+.env
 
 #ipynb_checkpoints
 .ipynb_checkpoints/
