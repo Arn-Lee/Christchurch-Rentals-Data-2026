@@ -1,5 +1,7 @@
 # Christchurch-Rentals-Data-2026
 
+# NOTE: this project is currently under development
+
 This project is intended to prepare and analyse data for short-term and long-term rentals in Chrichchurch, New Zealand sourced from AirBnB and Tenancy Services.
 
 AirBnB data is provided by Inside Airbnb (https://insideairbnb.com/get-the-data/). This project uses the listings.csv data for New Zealand from 19 June 2026.
