@@ -10,3 +10,6 @@ data/
 #ipynb_checkpoints
 .ipynb_checkpoints/
 /rentals.db
+
+# Orange Data Mining swap files
+*.ows.swp.p
