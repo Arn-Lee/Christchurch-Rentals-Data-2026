@@ -4,7 +4,7 @@
 
 This project is intended to prepare and analyse data for short-term and long-term rentals in Chrichchurch, New Zealand sourced from AirBnB and Tenancy Services.
 
-AirBnB data is provided by Inside Airbnb (https://insideairbnb.com/get-the-data/). This project uses the listings.csv data for New Zealand from 19 June 2026.
+AirBnB data is provided by Inside Airbnb (https://insideairbnb.com/get-the-data/). This project uses nine monthly `listings.csv` files for New Zealand (October 2025 to June 2026), saved as `listings-0.csv` (newest, June 2026) to `listings-8.csv` (oldest, October 2025); `workflows/AirBnB_date_lookup.csv` maps each file to its month.
 These data are available under public domain.
 Downloaded data (.csv) should be saved within a subdirectory named 'data', these have been excluded from this repo.
 
@@ -42,3 +42,21 @@ TODO note: we'll need to update this towards the end of the course (during refac
 TODO note 2: Need to clean up the table since we'll be culling some of the cols
 
 TODO note 3: Actually, we'll need to clean up this whole readme to describe the contents of the files and how/why to run them.
+
+## How to run the pipeline
+
+See [DESIGN_PRINCIPLES.md](DESIGN_PRINCIPLES.md) for the inputs, outputs and design of the pipeline. Create the environment with `pip install -r requirements.txt`, put the raw downloads in a folder named `data/` at the project root (git-ignored), and run these in order (notebooks from within `workflows/`):
+
+1. `workflows/Chch_dataset_clean.ipynb` collates the monthly files, investigates data quality (decisions in [data_cleaning.md](data_cleaning.md)) and writes `workflows/cleaned_chch_airbnb.csv`.
+2. `workflows/Koordinates SA lookup.ipynb` adds the Statistical Area 2 code and writes `workflows/sa_aug_cleaned_chch_airbnb.csv`. It needs a Koordinates API key in a `.env` file at the project root (`api_key = YOUR_KEY`) and is slow, so rerun it sparingly.
+3. `workflows/Tenancy_Services_bond_cleanup.ipynb` filters the Tenancy Services data to Christchurch and writes `data/tenancy_services_chch_only.csv`. It needs `data/neighbourhoods.geojson`, the Stats NZ SA2 shapefile in `data/statsnz-statistical-area/`, and the Tenancy Services CSV in `data/`.
+4. `python src/sql_prep.py` builds `rentals.db` (tables `airbnb_listing_month`, `tenancy_bond`, `joined_quarterly`). Paths are set in `src/config.py`. It stops with an error if the load or join checks fail.
+5. `python sanity_check_join.py rentals.db` runs the extra checks on the joined table.
+6. `workflows/deliv_5_analysis.ipynb` and the smaller analysis notebooks produce the results. The exploratory notebooks (histogram, top 10% reviews, days since review) read `data/AirBnB_all_chch.csv`, which is written by `workflows/AirBnB Chch base workflow.ipynb`.
+
+## Assumptions in the analysis
+
+- Prices are only available for some months: no listing has a price in December, January or February (see [data_cleaning.md](data_cleaning.md)). Quarterly prices are the mean of the months that have a price.
+- Tenancy Services median rent is **weekly**, so it is divided by 7 to compare with the Airbnb **nightly** price.
+- "Rental properties" in an area means its `active_bonds` count for all dwelling types and all bedroom counts.
+- A listing's SA2 comes from its first month in each quarter (see data_cleaning.md).
