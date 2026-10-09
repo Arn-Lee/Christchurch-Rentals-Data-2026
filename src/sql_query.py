@@ -171,6 +171,7 @@ plt.close()
 papermill.execute_notebook(
     SRC_PATH / "sql_query_notebook_template.ipynb",
     OUTPUTS_DIR / "sql_query_notebook_generated.ipynb",
+    cwd = SRC_PATH,
     parameters = {
         "median_chch_central": float(median_chch_central),
         "top_gap_area": int(top_gap_area),
