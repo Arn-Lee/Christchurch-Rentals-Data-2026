@@ -66,6 +66,7 @@ if airbnb_chch_area.empty:
         "No 'Christchurch City' neighbourhood_group found in GeoJSON."
     )
 
+airbnb_chch_area = airbnb_chch_area.dissolve(by = "neighbourhood_group")  # merge the wards into one shape
 boundary = airbnb_chch_area.geometry.iloc[0]
 overlap_area = sa_areas.intersection(boundary).area
 total_area = sa_areas.area
