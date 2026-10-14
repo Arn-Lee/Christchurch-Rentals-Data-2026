@@ -16,7 +16,7 @@ LISTINGS = $(wildcard data/listings-*.csv)
 
 .PHONY: all clean
 
-all: $(OUT)/sql_query_notebook_generated.html $(OUT)/airbnb_tenancy_joined.csv
+all: $(OUT)/sql_query_notebook_generated.html $(OUT)/airbnb_tenancy_joined.csv $(OUT)/leland_reports.done
 
 # Creates the outputs folder if it doesn't exist yet (used after the | below)
 $(OUT):
@@ -51,6 +51,8 @@ $(OUT)/sql_query_notebook_generated.html: src/sql_query.py src/sql_query_noteboo
 	$(PYTHON) src/sql_query.py
 
 # 8. Leland's reports go here once they are scripts, and get added to "all" above
+$(OUT)/leland_reports.done: src/leland_reports.py $(OUT)/AirBnB_all_chch.csv
+	$(PYTHON) src/leland_reports.py
 
 clean:
 	rm -rf $(OUT)
