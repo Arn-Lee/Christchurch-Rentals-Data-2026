@@ -6,10 +6,13 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import yaml
 
-# Paths relative to the repository
+# Paths relative to the repository, folder names from config.yaml
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "outputs"
+with open(ROOT / "config.yaml", "r") as f:
+    config = yaml.safe_load(f)
+OUT = ROOT / config["paths"]["outputs"]
 DATA = OUT / "AirBnB_all_chch.csv"
 
 OUT.mkdir(parents=True, exist_ok=True)

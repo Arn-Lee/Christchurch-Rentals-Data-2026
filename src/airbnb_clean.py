@@ -20,8 +20,8 @@ INPUT_CSV = OUTPUTS_DIR / "AirBnB_all_chch.csv"
 OUTPUT_CSV = OUTPUTS_DIR / "cleaned_chch_airbnb.csv"
 
 # Parameters
-CITY_FILTER = "Christchurch City"
-MISSINGNESS_THRESHOLD = 50  # % of a row missing before it gets flagged; must match data_cleaning.md
+CITY_FILTER = config["city_filter"]
+MISSINGNESS_THRESHOLD = config["cleaning"]["missingness_threshold"]  # % of a row missing before it gets flagged
 
 # Loading in the combined AirBnB data, stopping with a clear message if the previous step hasn't run
 if not INPUT_CSV.exists():
@@ -40,7 +40,7 @@ if n_dupes > 0:
     raise ValueError(f"{n_dupes} rows share the same id and year_month. Check the lookup table for a repeated file.")
 
 # Check: rows with a lot of missing values
-# These are flagged but not removed (see Row Completeness decision in data_cleaning.md)
+# These are flagged but not removed (see Row Completeness decision in README.md)
 row_missing_percent = df.isnull().mean(axis = 1) * 100
 n_high_missing = (row_missing_percent >= MISSINGNESS_THRESHOLD).sum()
 if n_high_missing > 0:

@@ -1,7 +1,7 @@
 """Builds the SQLite database (rentals.db) from the prepared Airbnb and Tenancy Services data.
 
 Adapted from deliv_5_sql.ipynb. Run from anywhere with:  python src/sql_prep.py
-Paths come from src/config.py; nothing runs on import, so the functions can be tested.
+Paths come from config.yaml; nothing runs on import, so the functions can be tested.
 
 Tables created:
     airbnb_listing_month  one row per listing per month
@@ -9,13 +9,22 @@ Tables created:
     joined_quarterly      one row per listing per quarter, with the area's median rent
 """
 import sqlite3
-import sys
+import warnings
 from pathlib import Path
 
 import pandas as pd
+import yaml
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import config
+# Loading in config.yaml
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+with open(PROJECT_ROOT / "config.yaml", "r") as f:
+    config = yaml.safe_load(f)
+
+# Setting paths
+OUTPUTS_DIR = PROJECT_ROOT / config["paths"]["outputs"]
+AIRBNB_CSV = OUTPUTS_DIR / "sa_aug_cleaned_chch_airbnb.csv"
+TENANCY_CSV = OUTPUTS_DIR / "tenancy_services_chch_only.csv"
+DB_PATH = PROJECT_ROOT / config["paths"]["sql_db"]
 
 AIRBNB_SCHEMA = """
 CREATE TABLE airbnb_listing_month (
@@ -165,12 +174,31 @@ def check_join(con, joined):
     assert n_dupes == 0, f"{n_dupes} duplicated listing-quarters after the join"
 
 
-def main(airbnb_csv=config.AIRBNB_CSV, tenancy_csv=config.TENANCY_CSV, db_path=config.DB_PATH):
+def check_sa2_moves(con):
+    """Warns about listings whose SA2 changes within a quarter (host moved the map pin).
+    JOIN_SQL keeps the first month's SA2 (see SA2 discrepancies decision in README.md)."""
+    n_moved = con.execute("""
+        SELECT COUNT(*) FROM (
+            SELECT id, quarter FROM airbnb_listing_month
+            GROUP BY id, quarter
+            HAVING COUNT(DISTINCT SA22019_V1_00) > 1
+        )
+    """).fetchone()[0]
+    if n_moved > 0:
+        warnings.warn(
+            f"{n_moved} listing-quarters have more than one SA2 code. "
+            f"The SA2 from the first month in the quarter was used."
+        )
+    return n_moved
+
+
+def main(airbnb_csv=AIRBNB_CSV, tenancy_csv=TENANCY_CSV, db_path=DB_PATH):
     con = sqlite3.connect(db_path)
     try:
         n_airbnb = load_airbnb(con, airbnb_csv)
         n_tenancy = load_tenancy(con, tenancy_csv)
         check_loads(con, n_airbnb, n_tenancy)
+        check_sa2_moves(con)
         joined = build_joined_quarterly(con)
         check_join(con, joined)
     finally:

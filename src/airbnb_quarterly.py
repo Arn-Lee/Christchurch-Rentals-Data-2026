@@ -23,7 +23,7 @@ TENANCY_CSV = OUTPUTS_DIR / "tenancy_services_chch_only.csv"
 OUTPUT_CSV = OUTPUTS_DIR / "airbnb_tenancy_joined.csv"
 
 # Parameters
-UNMATCHED_WARN_PERCENT = 20  # warn if more than this % of listing-quarters get no tenancy data
+UNMATCHED_WARN_PERCENT = config["tenancy"]["unmatched_warn_percent"]  # warn if more than this % of listing-quarters get no tenancy data
 
 # Loading in both datasets, stopping with a clear message if an earlier step hasn't run
 for path, step in [(AIRBNB_CSV, "the Koordinates SA lookup script"), (TENANCY_CSV, "bond_import.py")]:
@@ -39,7 +39,7 @@ df["year_month"] = pd.to_datetime(df["year_month"])
 df = df.sort_values(["id", "year_month"])
 
 # Check: listings whose SA2 changes within a quarter (host moved the map pin)
-# The first month's SA2 is kept (see Spatial Assignment decision in data_cleaning.md)
+# The first month's SA2 is kept (see SA2 discrepancies decision in README.md)
 sa2_per_quarter = df.groupby(["id", "quarter"])["SA22019_V1_00"].nunique()
 n_moved = (sa2_per_quarter > 1).sum()
 if n_moved > 0:

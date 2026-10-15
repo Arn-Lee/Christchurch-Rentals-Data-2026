@@ -23,15 +23,22 @@ OUTPUTS_DIR = PROJECT_ROOT / config["paths"]["outputs"]
 DB_PATH = PROJECT_ROOT / config["paths"]["sql_db"]
 DATA_PATH = PROJECT_ROOT / config["paths"]["data"]
 SRC_PATH = PROJECT_ROOT / config["paths"]["src"]
+SHAPEFILE = PROJECT_ROOT / config["paths"]["sa2_shapefile"]
+
+# Parameters
+CRS = config["crs"]
+CHCH_CENTRAL_SA2 = config["report"]["chch_central_sa2"]
+MAP_XLIM = config["report"]["map_xlim"]
+MAP_YLIM = config["report"]["map_ylim"]
 
 #Connecting to existing SQLite database
 con = sqlite3.connect(DB_PATH)
 
 # Loading up the SA2 polygons (also useful for SA2 code name lookup)
-sa_areas = gpd.read_file(DATA_PATH / "statsnz-statistical-area/statistical-area-2-2019-generalised.shp")
+sa_areas = gpd.read_file(SHAPEFILE)
 
 # Coverting CRS to NZGD2000 (EPSG:2193), if not already
-sa_areas = sa_areas.to_crs(2193)
+sa_areas = sa_areas.to_crs(CRS)
 
 # Recasting SA22019_V1 to int for join
 sa_areas["SA22019_V1"] = sa_areas["SA22019_V1"].astype(int)
@@ -43,7 +50,7 @@ joined_head.to_csv(OUTPUTS_DIR / "joined_sql_table.csv", index = False)
 
 # Calculating median price for Chch central
 median_chch_central = joined.loc[
-    joined["SA22019_V1_00"] == 326600, "price"
+    joined["SA22019_V1_00"] == CHCH_CENTRAL_SA2, "price"
 ].median()
 
 #Calculating the gap bet airbnb prices and long term rental
@@ -156,8 +163,8 @@ sa_joined.plot(
 )
 
 # Setting axis limits
-ax.set_xlim(1540000, 1595000)
-ax.set_ylim(5160000, 5200000)
+ax.set_xlim(*MAP_XLIM)
+ax.set_ylim(*MAP_YLIM)
 
 ax.set_title("AirBnB to long-term rental ratio")
 ax.axis("off") # don't need the distance axes
