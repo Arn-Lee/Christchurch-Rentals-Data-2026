@@ -8,7 +8,7 @@ import yaml
 from dotenv import load_dotenv
 import os
 
-# Loding config
+# Loading config
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 config_path = PROJECT_ROOT / "config.yaml"
@@ -22,9 +22,9 @@ INPUT_FILE = OUTPUTS_PATH / "cleaned_chch_airbnb.csv"
 OUTPUT_FILE = OUTPUTS_PATH / "sa_aug_cleaned_chch_airbnb.csv"
 
 # Koordinates settings
-SA2_LAYER_ID = 98970
-KOORDINATES_URL = "https://koordinates.com/services/query/v1/vector.json"
-NUM_WORKERS = 8
+SA2_LAYER_ID = config["koordinates"]["sa2_layer_id"]
+KOORDINATES_URL = config["koordinates"]["url"]
+NUM_WORKERS = config["koordinates"]["num_workers"]
 
 # Loading api
 load_dotenv()

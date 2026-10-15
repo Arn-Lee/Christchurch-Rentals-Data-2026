@@ -17,10 +17,16 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OUTPUTS_DIR = PROJECT_ROOT / config["paths"]["outputs"]
 DATA_PATH = PROJECT_ROOT / config["paths"]["data"]
 SRC_PATH = PROJECT_ROOT / config["paths"]["src"]
+SHAPEFILE = PROJECT_ROOT / config["paths"]["sa2_shapefile"]
+
+# Parameters
+CITY_FILTER = config["city_filter"]
+CRS = config["crs"]
+COVERAGE_THRESHOLD = config["tenancy"]["sa2_coverage_threshold"]  # share of an SA2 that must be inside Christchurch
 
 # Loading in geospatial data and checking for missing shp accessory files
 try:
-    sa_areas = gpd.read_file(DATA_PATH / "statsnz-statistical-area/statistical-area-2-2019-generalised.shp")
+    sa_areas = gpd.read_file(SHAPEFILE)
 except Exception as e:
     raise FileNotFoundError(
         f"Failed to load shapefile. Check that all shapefile components "
@@ -36,8 +42,8 @@ if sa_areas.crs is None:
 if airbnb_all_area.crs is None:
     raise ValueError("GeoJSON has no CRS defined.")
 
-sa_areas = sa_areas.to_crs(2193)
-airbnb_all_area = airbnb_all_area.to_crs(2193)
+sa_areas = sa_areas.to_crs(CRS)
+airbnb_all_area = airbnb_all_area.to_crs(CRS)
 
 if sa_areas.crs != airbnb_all_area.crs:
     raise ValueError(
@@ -60,17 +66,18 @@ if len(matches) > 1:
 ts_data = pd.read_csv(matches[0])
 
 # Selecting Chch-only SA2 areas first
-airbnb_chch_area = airbnb_all_area[airbnb_all_area["neighbourhood_group"] == "Christchurch City"]
+airbnb_chch_area = airbnb_all_area[airbnb_all_area["neighbourhood_group"] == CITY_FILTER]
 if airbnb_chch_area.empty:
     raise ValueError(
-        "No 'Christchurch City' neighbourhood_group found in GeoJSON."
+        f"No '{CITY_FILTER}' neighbourhood_group found in GeoJSON."
     )
 
+airbnb_chch_area = airbnb_chch_area.dissolve(by = "neighbourhood_group")  # merge the wards into one shape
 boundary = airbnb_chch_area.geometry.iloc[0]
 overlap_area = sa_areas.intersection(boundary).area
 total_area = sa_areas.area
 coverage = overlap_area / total_area
-chch_sa = sa_areas[coverage > 0.5] # Only selecting SAs with at least 50% coverage
+chch_sa = sa_areas[coverage > COVERAGE_THRESHOLD] # Only selecting SAs mostly inside Christchurch
 
 # Now to filter the TS dataset (location Id) by the areas identified in chch_sa
 chch_codes = chch_sa["SA22019_V1"]

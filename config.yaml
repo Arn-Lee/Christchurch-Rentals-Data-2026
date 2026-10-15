@@ -3,3 +3,31 @@ paths:
   data: data
   outputs: outputs
   sql_db: outputs/rentals.db
+  sa2_shapefile: data/statsnz-statistical-area/statistical-area-2-2019-generalised.shp
+
+# Inside Airbnb neighbourhood_group used to keep Christchurch listings and areas only
+city_filter: Christchurch City
+
+# NZGD2000 / NZTM, the projected CRS all spatial data is converted to
+crs: 2193
+
+# airbnb_clean.py
+cleaning:
+  missingness_threshold: 50  # % of a row missing before it gets flagged; must match README.md
+
+# koordinates_lookup.py
+koordinates:
+  url: https://koordinates.com/services/query/v1/vector.json
+  sa2_layer_id: 98970  # Stats NZ SA2 2019 layer
+  num_workers: 8       # parallel API requests
+
+# bond_import.py and airbnb_quarterly.py
+tenancy:
+  sa2_coverage_threshold: 0.5  # share of an SA2's area that must fall inside Christchurch City
+  unmatched_warn_percent: 20   # warn if more than this % of listing-quarters get no tenancy data
+
+# sql_query.py
+report:
+  chch_central_sa2: 326600  # SA2 code used for the Christchurch Central median price
+  map_xlim: [1540000, 1595000]  # choropleth extent in NZTM metres
+  map_ylim: [5160000, 5200000]

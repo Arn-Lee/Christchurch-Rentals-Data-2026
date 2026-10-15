@@ -15,7 +15,7 @@ DATA_PATH = PROJECT_ROOT / config["paths"]["data"]
 OUTPUTS_DIR = PROJECT_ROOT / config["paths"]["outputs"]
 LOOKUP_FILE = DATA_PATH / "AirBnB_date_lookup.csv"
 OUTPUTS_CSV = OUTPUTS_DIR/ "AirBnB_all_chch.csv"
-CITY_FILTER = "Christchurch City"
+CITY_FILTER = config["city_filter"]
 
 #Load lookup table
 if not LOOKUP_FILE.exists():
