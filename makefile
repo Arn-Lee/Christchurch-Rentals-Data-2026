@@ -4,7 +4,12 @@
 # Each rule reads as  output: inputs  followed by the command that builds the output.
 # Make only reruns a step when one of its inputs is newer than its output.
 
-PYTHON ?= python
+# setting up the virtual env
+.venv:
+	python -m venv .venv
+	.venv/Scripts/pip install -r requirements.txt
+
+PYTHON = .venv/Scripts/python.exe
 OUT = outputs
 # Every script reads config.yaml, so changing a setting reruns the steps after it
 CONFIG = config.yaml

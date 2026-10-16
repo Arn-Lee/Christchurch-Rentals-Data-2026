@@ -22,8 +22,14 @@ It is available at https://www.tenancy.govt.nz/about-tenancy-services/data-and-s
 
 ## Running the pipeline
 
+You will need Python 3 (3.12.3 or later) installed to run this pipeline. Additionally, you'll need a Koordinates API key.
+Visit https://koordinates.com/ to register and obtain a key.
+
+**NOTE:** For Windows users, please ensure that Python is correctly added to PATH and Git Bash is strongly recommended.
+
 To run the pipeline, first, prepare all input files as indicated in the section below.
-After the files are ready, run the makefile located in the project root.
+After the files are ready, run the makefile located in the project root (via `make all` in the terminal).
+For Windows users, Git Bash is recommended instead of Powershell.
 All outputs (SQLite DB, reports etc.) will be prepared within `/outputs`.
 
 **NOTE:** As stated above, the date range of the AirBnB dataset will determine the date range of the resulting database!
